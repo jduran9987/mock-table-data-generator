@@ -66,13 +66,13 @@ pyarrow>=11.0.0
 ### Basic Usage
 ```bash
 # Generate initial dataset (1000 rows each)
-python synthetic_data_app.py \
+python main.py \
     --table-names users,products,orders \
     --num-rows 1000 \
     --s3-bucket my-data-bucket
 
 # Add more orders (with 50MB file size limit)
-python synthetic_data_app.py \
+python main.py \
     --table-names orders \
     --num-rows 5000 \
     --file-size-limit 50 \
@@ -115,13 +115,13 @@ python synthetic_data_app.py \
 ### 1. Initial Dataset Creation
 ```bash
 # Start with base tables
-python synthetic_data_app.py \
+python main.py \
     --table-names users,products \
     --num-rows 1000 \
     --s3-bucket my-bucket
 
 # Then add dependent tables
-python synthetic_data_app.py \
+python main.py \
     --table-names orders \
     --num-rows 2000 \
     --s3-bucket my-bucket
@@ -130,7 +130,7 @@ python synthetic_data_app.py \
 ### 2. Incremental Data Addition
 ```bash
 # Add more users and orders
-python synthetic_data_app.py \
+python main.py \
     --table-names users,orders \
     --num-rows 500 \
     --s3-bucket my-bucket
@@ -139,7 +139,7 @@ python synthetic_data_app.py \
 ### 3. Large Dataset Generation
 ```bash
 # Generate large dataset with chunking
-python synthetic_data_app.py \
+python main.py \
     --table-names orders \
     --num-rows 100000 \
     --file-size-limit 25 \
@@ -167,7 +167,7 @@ my-bucket/
 ```
 project-directory/
 ├── metadata.json              # ID tracking and relationships
-├── synthetic_data_app.py      # Main application
+├── main.py      # Main application
 ├── data_generators.py         # Table-specific generators
 ├── metadata_manager.py        # Metadata persistence
 └── s3_uploader.py            # S3 upload management
@@ -257,7 +257,7 @@ return {
 **Error: "No existing users found"**
 ```bash
 # Solution: Generate users first
-python synthetic_data_app.py --table-names users --num-rows 100 --s3-bucket bucket
+python main.py --table-names users --num-rows 100 --s3-bucket bucket
 ```
 
 **AWS Credentials Error**
@@ -272,7 +272,7 @@ export AWS_SECRET_ACCESS_KEY=your_secret_key
 **Memory Issues with Large Datasets**
 ```bash
 # Use smaller chunks
-python synthetic_data_app.py --file-size-limit 10 ...
+python main.py --file-size-limit 10 ...
 ```
 
 ### Debugging
