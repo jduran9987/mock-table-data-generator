@@ -29,6 +29,7 @@ Typical usage:
     order_gen = OrderDataGenerator(metadata_manager)
     orders_df = order_gen.generate_data("orders", 2000)
 """
+
 import random
 from datetime import datetime, timedelta, timezone
 
@@ -215,7 +216,6 @@ class UserDataGenerator(DataGenerator):
         # Update metadata
         last_id = max(id_range)
         self.metadata_manager.update_last_id("users", last_id)
-        self.metadata_manager.add_generated_ids("users", list(id_range))
 
         return pd.DataFrame(users_data)
 
@@ -308,7 +308,6 @@ class ProductDataGenerator(DataGenerator):
         # Update metadata
         last_id = max(id_range)
         self.metadata_manager.update_last_id("products", last_id)
-        self.metadata_manager.add_generated_ids("products", list(id_range))
 
         return pd.DataFrame(products_data)
 
@@ -345,15 +344,10 @@ class OrderDataGenerator(DataGenerator):
             for proper foreign key relationships. Updates metadata with
             generated order IDs.
         """
-        # Get existing user and product IDs for foreign key relationships
-        existing_user_ids = self.metadata_manager.get_existing_ids("users")
-        existing_product_ids = self.metadata_manager.get_existing_ids(
-            "products"
-        )
-
-        if not existing_user_ids:
+        # Check for existing data using optimized count method
+        if self.metadata_manager.get_existing_id_count("users") == 0:
             raise ValueError("No existing users found. Generate users first.")
-        if not existing_product_ids:
+        if self.metadata_manager.get_existing_id_count("products") == 0:
             raise ValueError(
                 "No existing products found. Generate products first."
             )
@@ -363,7 +357,8 @@ class OrderDataGenerator(DataGenerator):
         orders_data = []
 
         for order_id in id_range:
-            user_id = random.choice(existing_user_ids)
+            # Use optimized random ID selection
+            user_id = self.metadata_manager.get_random_existing_id("users")
             order_date = self.fake.date_time_between(
                 start_date="-2y",
                 end_date="now"
@@ -374,10 +369,12 @@ class OrderDataGenerator(DataGenerator):
                 [1, 2, 3, 4, 5],
                 weights=[40, 30, 20, 7, 3]
             )[0]
-            order_products = random.sample(
-                existing_product_ids,
-                min(num_items, len(existing_product_ids))
-            )
+            
+            # Generate random product selection (allows duplicates for realism)
+            order_products = [
+                self.metadata_manager.get_random_existing_id("products")
+                for _ in range(num_items)
+            ]
 
             # Calculate order totals
             subtotal = 0
@@ -481,6 +478,5 @@ class OrderDataGenerator(DataGenerator):
         # Update metadata
         last_id = max(id_range)
         self.metadata_manager.update_last_id("orders", last_id)
-        self.metadata_manager.add_generated_ids("orders", list(id_range))
         
         return pd.DataFrame(orders_data)

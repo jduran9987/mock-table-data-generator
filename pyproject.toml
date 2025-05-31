@@ -8,4 +8,5 @@ dependencies = [
     "boto3>=1.38.27",
     "faker>=37.3.0",
     "pandas>=2.2.3",
+    "pyarrow>=20.0.0",
 ]
