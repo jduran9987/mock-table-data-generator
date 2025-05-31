@@ -146,42 +146,6 @@ class MetadataManager:
         """
         self.metadata[table_name]["last_id"] = last_id
     
-    def get_existing_ids(
-        self,
-        table_name: str
-    ) -> list[int]:
-        """Get list of all existing IDs for a table.
-        
-        Args:
-            table_name: Name of the table ("users", "orders", or 
-                       "products").
-            
-        Returns:
-            List of integers representing all IDs that have been generated
-            for the specified table across all previous runs.
-            Generated as range(1, last_id + 1) converted to list.
-            
-        Note:
-            This is primarily used for foreign key references when 
-            generating related data (e.g., orders referencing existing 
-            user IDs). IDs are inferred from last_id since generation
-            is sequential starting from 1.
-            
-            WARNING: For large datasets (10K+ records), this creates
-            large lists in memory. Consider using get_random_existing_id()
-            or get_existing_id_count() for better performance.
-            
-        Example:
-            If last_id is 1000, returns [1, 2, 3, ..., 1000].
-            
-        Raises:
-            KeyError: If table_name is not found in metadata.
-        """
-        last_id = self.metadata[table_name]["last_id"]
-        if last_id == 0:
-            return []
-        return list(range(1, last_id + 1))
-    
     def get_random_existing_id(self, table_name: str) -> int:
         """Get a random existing ID for foreign key relationships.
         
