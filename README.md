@@ -167,10 +167,10 @@ my-bucket/
 ```
 project-directory/
 ├── metadata.json              # ID tracking and relationships
-├── main.py      # Main application
+├── main.py                    # Main application
 ├── data_generators.py         # Table-specific generators
 ├── metadata_manager.py        # Metadata persistence
-└── s3_uploader.py            # S3 upload management
+└── s3_uploader.py             # S3 upload management
 ```
 
 ## Architecture
@@ -296,26 +296,6 @@ python main.py --file-size-limit 10 ...
 - Validate ETL pipeline performance
 - Test data warehouse loading procedures
 - Benchmark query optimization
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add comprehensive tests for new functionality
-4. Ensure all docstrings follow the established format
-5. Maintain line length limits (77 characters)
-6. Submit a pull request with detailed description
-
-## License
-
-[Specify your license here]
-
-## Support
-
-For issues, questions, or feature requests:
-- Create an issue in the repository
-- Check existing documentation and troubleshooting guides
-- Review code comments for implementation details
 
 ---
 
