@@ -16,6 +16,7 @@ This project creates synthetic data that mimics real-world e-commerce databases,
 
 ### 🔄 Incremental Generation
 - Persistent metadata tracking across runs
+- **Optimized metadata storage with minimal memory footprint**
 - Seamless addition of new data to existing datasets
 - Automatic ID sequencing to prevent conflicts
 - Foreign key relationship maintenance
@@ -35,9 +36,9 @@ This project creates synthetic data that mimics real-world e-commerce databases,
 ## Installation
 
 ### Prerequisites
-- Python 3.9+
+- Python 3.12+
 - AWS credentials configured (for S3 uploads)
-- Required Python packages (see requirements.txt)
+- Required Python packages (see pyproject.toml)
 
 ### Setup
 ```bash
@@ -45,7 +46,10 @@ This project creates synthetic data that mimics real-world e-commerce databases,
 git clone <repository-url>
 cd synthetic-data-generator
 
-# Install dependencies
+# Install dependencies using uv (recommended)
+uv sync
+
+# Or install with pip
 pip install -r requirements.txt
 
 # Configure AWS credentials (if not already done)
@@ -54,11 +58,10 @@ aws configure
 
 ### Requirements
 ```
-pandas>=1.5.0
-boto3>=1.26.0
-faker>=18.0.0
-numpy>=1.24.0
-pyarrow>=11.0.0
+pandas>=2.2.3
+boto3>=1.38.27
+faker>=37.3.0
+pyarrow>=20.0.0
 ```
 
 ## Quick Start
@@ -166,10 +169,10 @@ my-bucket/
 ### Local Files
 ```
 project-directory/
-├── metadata.json              # ID tracking and relationships
+├── metadata.json              # Optimized ID tracking (stores only last_id values)
 ├── main.py                    # Main application
 ├── data_generators.py         # Table-specific generators
-├── metadata_manager.py        # Metadata persistence
+├── metadata_manager.py        # Optimized metadata persistence
 └── s3_uploader.py             # S3 upload management
 ```
 
@@ -177,7 +180,7 @@ project-directory/
 
 ### Core Components
 
-1. **MetadataManager**: Tracks IDs and relationships across runs
+1. **MetadataManager**: Tracks IDs and relationships across runs with optimized storage
 2. **DataGenerator**: Base class with dynamic method dispatch
 3. **UserDataGenerator**: Creates realistic user demographics
 4. **ProductDataGenerator**: Generates product catalog data
@@ -209,10 +212,10 @@ Modify metadata structure for additional table types:
 ```python
 # In MetadataManager._load_metadata()
 return {
-    "users": {"last_id": 0, "existing_ids": []},
-    "products": {"last_id": 0, "existing_ids": []},
-    "orders": {"last_id": 0, "existing_ids": []},
-    "custom_table": {"last_id": 0, "existing_ids": []}
+    "users": {"last_id": 0},
+    "products": {"last_id": 0},
+    "orders": {"last_id": 0},
+    "custom_table": {"last_id": 0}
 }
 ```
 
@@ -239,6 +242,12 @@ return {
 - Processes data in configurable chunks
 - Temporary file cleanup prevents disk bloat
 - Sample-based size estimation minimizes memory overhead
+
+### Metadata Efficiency
+- Stores only `last_id` values instead of full ID lists
+- Dramatically reduced metadata file size for large datasets
+- Automatic migration from legacy metadata formats
+- Memory-efficient random ID selection for foreign keys
 
 ### File Size Management
 - Intelligent chunking based on actual compressed sizes
@@ -276,7 +285,7 @@ python main.py --file-size-limit 10 ...
 ```
 
 ### Debugging
-- Check `metadata.json` for current state
+- Check `metadata.json` for current state (now stores only last_id values)
 - Verify S3 bucket permissions
 - Review AWS CloudTrail for upload issues
 
